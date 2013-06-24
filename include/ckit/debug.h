@@ -1,0 +1,49 @@
+/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/*
+ * Macros for printing debug information, which can be disabled at
+ * compile time.
+ *
+ * Authors: Erik Nordström <enordstr@cs.princeton.edu>
+ *
+ *
+ *	This program is free software; you can redistribute it and/or
+ *	modify it under the terms of the GNU General Public License as
+ *	published by the Free Software Foundation; either version 2 of
+ *	the License, or (at your option) any later version.
+ */
+#ifndef _DEBUG_H_
+#define _DEBUG_H_
+
+#include <stdio.h>
+
+#if defined(__ANDROID__)
+#include <android/log.h>
+#if defined(ENABLE_DEBUG)
+#define LOG_DBG(format, ...)                                    \
+    __android_log_print(ANDROID_LOG_DEBUG, "ckit",       \
+                        "%s: "format, __func__, ## __VA_ARGS__)
+#else
+#define LOG_DBG(format, ...)
+#endif /* ENABLE_DEBUG */
+#define LOG_ERR(format, ...)                                \
+    __android_log_print(ANDROID_LOG_ERROR, "ckit",   \
+                        "%s: ERROR "format,                 \
+                        __func__, ## __VA_ARGS__)
+#else
+#if defined(ENABLE_DEBUG)
+#include <sys/time.h>
+#define LOG_DBG(format, ...) ({                             \
+            struct timeval now;                             \
+            gettimeofday(&now, NULL);                       \
+            printf("%ld.%06ld %s: "format, now.tv_sec,      \
+                   now.tv_usec, __func__, ## __VA_ARGS__);  \
+        })
+#else
+#define LOG_DBG(format, ...)
+#endif
+#define LOG_ERR(format, ...)                    \
+    fprintf(stderr, "%s: ERROR "format,         \
+            __func__, ## __VA_ARGS__)
+#endif /* OS_ANDROID */
+
+#endif /* _DEBUG_H_ */
