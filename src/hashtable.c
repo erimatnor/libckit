@@ -113,7 +113,7 @@ int hashelm_hash(struct hashtable *table, struct hashelm *he,
 {
     struct hashslot *slot;
 
-    if (!hlist_unhashed(&he->list)) {
+    if (!list_empty(&he->list)) {
         LOG_ERR("Hash element already hashed\n");
         return -1;
     }
@@ -124,7 +124,7 @@ int hashelm_hash(struct hashtable *table, struct hashelm *he,
     pthread_mutex_lock(&slot->lock);
     slot->count++;
     atomic_inc(&table->count);
-    hlist_add_head(&he->list, &slot->head);
+    list_add_head(&slot->head, &he->list);
     hashelm_hold(he);
     pthread_mutex_unlock(&slot->lock);
 
@@ -137,7 +137,7 @@ void hashelm_unhash(struct hashtable *table, struct hashelm *he)
 
     slot = get_slot(table, he->hash);
     pthread_mutex_lock(&slot->lock);
-    hlist_del_init(&he->list);
+    list_del(&he->list);
     slot->count--;
     atomic_dec(&table->count);
     hashelm_put(he);
@@ -149,7 +149,7 @@ void __hashelm_unhash(struct hashtable *table, struct hashelm *he)
     struct hashslot *slot;    
 
     slot = get_slot(table, he->hash);
-    hlist_del_init(&he->list);
+    list_del(&he->list);
     slot->count--;
     atomic_dec(&table->count);
     hashelm_put(he);
@@ -173,7 +173,7 @@ int hashelm_init(struct hashelm *he,
                  equalfn_t equalfn, 
                  freefn_t freefn)
 {
-    INIT_HLIST_LIST(&he->list);
+    LIST_INIT(&he->list);
     atomic_set(&he->refcount, 1);
     he->hashfn = hashfn;
     he->equalfn = equalfn;

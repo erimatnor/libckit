@@ -336,7 +336,7 @@ int _rb_tree_insert(rb_tree_t *tree, void *key, size_t key_len,
 	ret = bst_insert(tree, key, key_len, val, val_len, &new_node);
 	
 	if (ret <= 0) {
-		fLOG_DBG(stderr, "inserting error\n");
+		LOG_DBG(stderr, "inserting error\n");
 		return ret;
 	}
 	
@@ -372,7 +372,7 @@ int rb_tree_insert(rb_tree_t *tree, const void *key, size_t key_len,
 
 int rb_tree_delete(rb_tree_t *tree, const void *key, size_t key_len)
 {
-    
+    return 0;
 }
 
 static void rb_tree_node_destroy(rb_tree_t *tree, rb_node_t *node)

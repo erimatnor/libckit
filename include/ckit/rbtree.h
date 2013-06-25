@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-#ifndef __rb_tree_h__
-#define __rb_tree_h__
+#ifndef __RBTREE_H__
+#define __RBTREE_H__
 
 #include <sys/types.h>
 
@@ -69,4 +69,4 @@ void rb_tree_print_in_order(rb_tree_t *tree);
 }
 #endif
         
-#endif __rb_tree_h__
+#endif /* __RBTREE_H__ */

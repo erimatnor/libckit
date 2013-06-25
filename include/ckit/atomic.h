@@ -16,5 +16,7 @@ typedef struct atomic {
 #define atomic_read(a) ({                       \
             __sync_synchronize();               \
             (a)->value; })
+#define atomic_dec_and_test(a)                  \
+    (atomic_dec(a) == 0)
 
 #endif /* __ATOMIC_H__ */

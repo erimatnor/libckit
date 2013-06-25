@@ -14,8 +14,8 @@ AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_CONFIG_HEADERS([config.h])
 
-CFLAGS=
-CXXFLAGS=
+CFLAGS=-Wall
+CXXFLAGS=-Wall
 EXTRA_DEFINES=
 
 dnl Option to set debugging                                                                          
