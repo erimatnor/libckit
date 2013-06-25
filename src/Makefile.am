@@ -19,15 +19,15 @@ libckit_la_include_HEADERS = \
 libckit_la_CPPFLAGS = \
 	-I$(top_srcdir)/include
 libckit_la_CFLAGS =
-libckit_la_LDFLAGS =
+libckit_la_LDFLAGS = -lrt
 
-bin_PROGRAMS = list_unittest
+#bin_PROGRAMS = list_unittest
 
-list_unittest_SOURCES = \
-	list_unittest.c
+#list_unittest_SOURCES = \
+#	list_unittest.c
 
-list_unittest_CPPFLAGS = \
-	-I$(top_srcdir)/include
+#list_unittest_CPPFLAGS = \
+#	-I$(top_srcdir)/include
 
 
 clean-local:
