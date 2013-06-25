@@ -2,21 +2,14 @@
 /*
  * A hash table implementation with reference-counted elements.
  *
- * Authors: Erik Nordström <enordstr@cs.princeton.edu>
- * 
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License as
- *	published by the Free Software Foundation; either version 2 of
- *	the License, or (at your option) any later version.
+ * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  */
-#ifndef _HASHTABLE_H_
-#define _HASHTABLE_H_
+#ifndef __HASHTABLE_H__
+#define __HASHTABLE_H__
 
-#include "hash.h"
-#include "list.h"
-#include "atomic.h"
-#include "platform.h"
+#include <ckit/hash.h>
+#include <ckit/list.h>
+#include <ckit/atomic.h>
 #include <string.h>
 
 struct hashelm;
@@ -26,7 +19,7 @@ typedef int (*equalfn_t)(const struct hashelm *elm, const void *key);
 typedef void (*freefn_t)(struct hashelm *elm);
 
 typedef struct hashelm {
-	struct hlist_node node;
+	list_t list;
     atomic_t refcount;
     unsigned int hash;
 	void *key;
@@ -59,9 +52,9 @@ void hashtable_fini(struct hashtable *table);
 hashelm_t *hashtable_lookup(struct hashtable *table, const void *key,
                             hashfn_t hashfn);
 unsigned int hashtable_count(struct hashtable *table);
-int hashtable_for_each(struct hashtable *table, 
-                       void (*action)(struct hashelm *, void *), 
-                       void *data);
+int hashtable_foreach(struct hashtable *table, 
+                      void (*action)(struct hashelm *, void *), 
+                      void *data);
 int hashelm_hashed(struct hashelm *he);
 int hashelm_hash(struct hashtable *table, struct hashelm *he, const void *key);
 void __hashelm_unhash(struct hashtable *table, struct hashelm *he);
@@ -71,7 +64,7 @@ void hashelm_put(struct hashelm *he);
 int hashelm_init(struct hashelm *he, hashfn_t hashfn, 
                  equalfn_t equalfn, freefn_t freefn);
 
-#define hashtable_lookup_entry(tbl, key, hashfn, type, member)          \
-    container_of(hashtable_lookup(tbl, key, hashfn), type, member)
+#define hashtable_lookup_entry(tbl, key, hashfn, type, member)      \
+    get_enclosing(hashtable_lookup(tbl, key, hashfn), type, member)
 
-#endif /* _HASHTABLE_H_ */
+#endif /* __HASHTABLE_H__ */

@@ -2,23 +2,18 @@
  *
  * A hash table implementation with reference-counted elements.
  *
- * Authors: Erik Nordström <enordstr@cs.princeton.edu>
+ * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  * 
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License as
- *	published by the Free Software Foundation; either version 2 of
- *	the License, or (at your option) any later version.
  */
 #include <stdlib.h>
 #include <pthread.h>
-#include <common/hashtable.h>
-#include <common/debug.h>
+#include <ckit/hashtable.h>
+#include <ckit/debug.h>
 
 struct hashslot {
-    struct hlist_head head;
-	unsigned long     count;
-	pthread_mutex_t   lock;
+    list_t head;
+	unsigned long count;
+	pthread_mutex_t lock;
 };
 
 /*
@@ -31,7 +26,7 @@ int hashtable_init(struct hashtable *table,
 
     memset(table, 0, sizeof(*table));
     table->hash = malloc(sizeof(struct hashslot) * size);
-
+    
     if (!table->hash)
         return -1;
     
@@ -41,7 +36,7 @@ int hashtable_init(struct hashtable *table,
     /* LOG_DBG("Initializing hash table\n"); */
 
 	for (i = 0; i <= table->mask; i++) {
-		INIT_HLIST_HEAD(&table->hash[i].head);
+		LIST_INIT(&table->hash[i].head);
 		table->hash[i].count = 0;
 		pthread_mutex_init(&table->hash[i].lock, NULL);
 	}
@@ -55,17 +50,16 @@ void hashtable_fini(struct hashtable *table)
 
     for (i = 0; i <= table->mask; i++) {
         struct hashelm *he;
-        struct hlist_node *walk, *tmp;
         
         pthread_mutex_lock(&table->hash[i].lock);
 
-        hlist_for_each_entry_safe(he, walk, tmp, 
-                                  &table->hash[i].head, node) {
-            hlist_del_init(&he->node);
+        while (!list_empty(&table->hash[i].head)) {
+            he = list_front(&table->hash[i].head, struct hashelm, list);
+            list_del(&he->list);
             hashelm_put(he);
         }
 
-		INIT_HLIST_HEAD(&table->hash[i].head);
+		LIST_INIT(&table->hash[i].head);
 		table->hash[i].count = 0;
         pthread_mutex_unlock(&table->hash[i].lock);
 		pthread_mutex_destroy(&table->hash[i].lock);
@@ -74,7 +68,7 @@ void hashtable_fini(struct hashtable *table)
     free(table->hash);
 }
 
-int hashtable_for_each(struct hashtable *table, 
+int hashtable_foreach(struct hashtable *table, 
                        void (*action)(struct hashelm *, void *), 
                        void *data)
 {
@@ -85,15 +79,14 @@ int hashtable_for_each(struct hashtable *table,
 
     for (i = 0; i <= table->mask; i++) {
         struct hashelm *he;
-        struct hlist_node *walk, *tmp;
         
         pthread_mutex_lock(&table->hash[i].lock);
         
-        hlist_for_each_entry_safe(he, walk, tmp, 
-                                  &table->hash[i].head, node) {
+        list_foreach(he, &table->hash[i].head, list) {
             action(he, data);
             n++;
         }
+
         pthread_mutex_unlock(&table->hash[i].lock);
 	}
     return n;
@@ -112,7 +105,7 @@ static struct hashslot *get_slot(struct hashtable *tbl,
 
 int hashelm_hashed(struct hashelm *he)
 {
-    return !hlist_unhashed(&he->node);
+    return !list_empty(&he->list);
 }
 
 int hashelm_hash(struct hashtable *table, struct hashelm *he, 
@@ -120,7 +113,7 @@ int hashelm_hash(struct hashtable *table, struct hashelm *he,
 {
     struct hashslot *slot;
 
-    if (!hlist_unhashed(&he->node)) {
+    if (!hlist_unhashed(&he->list)) {
         LOG_ERR("Hash element already hashed\n");
         return -1;
     }
@@ -131,7 +124,7 @@ int hashelm_hash(struct hashtable *table, struct hashelm *he,
     pthread_mutex_lock(&slot->lock);
     slot->count++;
     atomic_inc(&table->count);
-    hlist_add_head(&he->node, &slot->head);
+    hlist_add_head(&he->list, &slot->head);
     hashelm_hold(he);
     pthread_mutex_unlock(&slot->lock);
 
@@ -144,7 +137,7 @@ void hashelm_unhash(struct hashtable *table, struct hashelm *he)
 
     slot = get_slot(table, he->hash);
     pthread_mutex_lock(&slot->lock);
-    hlist_del_init(&he->node);
+    hlist_del_init(&he->list);
     slot->count--;
     atomic_dec(&table->count);
     hashelm_put(he);
@@ -156,7 +149,7 @@ void __hashelm_unhash(struct hashtable *table, struct hashelm *he)
     struct hashslot *slot;    
 
     slot = get_slot(table, he->hash);
-    hlist_del_init(&he->node);
+    hlist_del_init(&he->list);
     slot->count--;
     atomic_dec(&table->count);
     hashelm_put(he);
@@ -180,7 +173,7 @@ int hashelm_init(struct hashelm *he,
                  equalfn_t equalfn, 
                  freefn_t freefn)
 {
-    INIT_HLIST_NODE(&he->node);
+    INIT_HLIST_LIST(&he->list);
     atomic_set(&he->refcount, 1);
     he->hashfn = hashfn;
     he->equalfn = equalfn;
@@ -193,14 +186,13 @@ struct hashelm *hashtable_lookup(struct hashtable *table,
                                  const void *key, hashfn_t hashfn)
 {
     struct hashelm *he;
-    struct hlist_node *walk;
     struct hashslot *slot;
 
     slot = get_slot(table, hashfn(key));
     
     pthread_mutex_lock(&slot->lock);
-
-    hlist_for_each_entry(he, walk, &slot->head, node) {
+    
+    list_foreach(he, &slot->head, list) {
         if (he->equalfn(he, key)) {
             hashelm_hold(he);
             goto found;

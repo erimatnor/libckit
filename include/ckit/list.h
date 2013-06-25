@@ -8,7 +8,7 @@
 #include <ckit/ckit.h>
 
 typedef struct list {
-    struct list *prev, next;
+    struct list *prev, *next;
 } list_t;
 
 #define LIST_INIT(list)                             \
@@ -38,7 +38,14 @@ static inline void list_del(struct list *to_del)
 }
 
 #define list_empty(list) ((list)->next == (list))
+#define list_entry(list, type, member)          \
+    get_enclosing(list, type, member)
 #define list_front(list, type, member)          \
-    get_enclosing((list)->next, type, member);
+    get_enclosing((list)->next, type, member)
+
+#define list_foreach(ptr, head, member)                                 \
+    for (ptr = list_front(head, typeof(*(ptr)), member);                \
+         &(ptr)->member != head;                                        \
+         ptr = get_enclosing((ptr)->member.next, typeof(*(ptr)), member))
 
 #endif /* __LIST_H__ */
