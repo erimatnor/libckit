@@ -14,7 +14,7 @@ typedef struct list {
 #define LIST_INIT(list)                             \
     { (list)->prev = list; (list)->next = list; }
 
-static inline void list_add_head(struct list *head, struct list *to_add)
+static inline void list_add_front(struct list *head, struct list *to_add)
 {
     to_add->next = head->next;
     to_add->prev = head;
@@ -22,7 +22,7 @@ static inline void list_add_head(struct list *head, struct list *to_add)
     head->next = to_add;
 }
 
-static inline void list_add_tail(struct list *head, struct list *to_add)
+static inline void list_add_back(struct list *head, struct list *to_add)
 {
     to_add->next = head;
     to_add->prev = head->prev;
@@ -33,7 +33,7 @@ static inline void list_add_tail(struct list *head, struct list *to_add)
 static inline void list_del(struct list *to_del)
 {
     to_del->prev->next = to_del->next;
-    to_del->next = to_del->prev;
+    to_del->next->prev = to_del->prev;
     to_del->next = to_del->prev = NULL;
 }
 

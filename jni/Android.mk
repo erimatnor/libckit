@@ -1,4 +1,5 @@
 LOCAL_PATH := $(my-dir)
+
 include $(CLEAR_VARS)
 
 LOCAL_HDR_FILES := \
@@ -20,8 +21,6 @@ LOCAL_SRC_FILES := \
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../include
-
-#LOCAL_SHARED_LIBRARIES := liblog
 
 EXTRA_DEFINES=
 DEFINES=$(EXTRA_DEFINES)

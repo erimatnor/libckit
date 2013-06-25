@@ -21,5 +21,14 @@ libckit_la_CPPFLAGS = \
 libckit_la_CFLAGS =
 libckit_la_LDFLAGS =
 
+bin_PROGRAMS = list_unittest
+
+list_unittest_SOURCES = \
+	list_unittest.c
+
+list_unittest_CPPFLAGS = \
+	-I$(top_srcdir)/include
+
+
 clean-local:
 	rm -f *~
