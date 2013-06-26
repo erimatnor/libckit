@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- * Pipe-based IPC signals for waking/signaling between threads.
+ * Pipe-based IPC signals for waking/signaling between
+ * threads. Supports waiting on using, e.g., select() or poll().
  *
  * Author: Erik Nordström <erik.nordstrom@gmail.com>
  *

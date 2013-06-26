@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- * A hash table implementation with reference-counted elements.
+ * A thread-safe hash table implementation with reference-counted
+ * elements.
  *
  * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  */
@@ -42,25 +43,87 @@ static inline unsigned int default_hashfn(const void *key)
     return *((unsigned int *)key);
 }
 
+/**
+ * Initialize hash table of given size, hash function, equal function
+ * and free functions to be applied to hashed elments. Must be called
+ * once for every hash table before use.
+ */
 int hashtable_init(struct hashtable *ht, unsigned int size, 
                    hashfn_t hashfn, equalfn_t equalfn, freefn_t freefn);
+
+/**
+ * Cleanup and free hash table.
+ */
 void hashtable_fini(struct hashtable *ht);
+
+/**
+ * Lookup an element in the hash table based on given key. If a
+ * corresponding element is returned, it will have its reference count
+ * incremented by one, and must thus be followed by a hashelm_put()
+ * once the element is no longer used. In case the element is not
+ * found, this function returns NULL.
+ */
 hashelm_t *hashtable_lookup(struct hashtable *ht, const void *key);
+
+/**
+ * Returns the number of elementes in the hash table.
+ */
 unsigned int hashtable_count(struct hashtable *ht);
+
+/**
+ * Apply a function to every element in the hash table.
+ */
 int hashtable_foreach(struct hashtable *ht, 
                       void (*action)(struct hashelm *, void *), 
                       void *data);
+
+/**
+ * Insert element into hash table based on given key.
+ */
 int hashtable_hash(struct hashtable *ht, struct hashelm *he, const void *key);
+
+/**
+ * Remove an element from the hash table.
+ */
 void hashtable_unhash(struct hashtable *ht, struct hashelm *he);
+
+/**
+ * Remove an element from the hash table. NOTE: this function will not
+ * lock the hash table and is not thread safe.
+ */
+void __hashtable_unhash(struct hashtable *ht, struct hashelm *he);
+
+/**
+ * Check whether an element is hashed or not.
+ */
 int hashelm_hashed(struct hashelm *he);
-void __hashelm_unhash(struct hashtable *ht, struct hashelm *he);
+
+/**
+ * Increment reference count on hash element.
+ */
 void hashelm_hold(struct hashelm *he);
+
+/**
+ * Decrement reference count on hash element, potentially freeing it.
+ */
 void hashelm_put(struct hashelm *he);
+
+/**
+ * Initialize hash element. Must be called on every element before
+ * insertion in hash table.
+ */
 int hashelm_init(struct hashelm *he);
 
+/**
+ * Get the enclosing object that this element is embedded in. 
+ */
 #define hashtable_entry(he, type, member) \
     get_enclosing(he, type, member)
 
+/**
+ * Do a hash table lookup and return the enclosing object that the
+ * returned element is embedded in.
+ */
 #define hashtable_lookup_entry(tbl, key, hashfn, type, member)      \
     get_enclosing(hashtable_lookup(tbl, key, hashfn), type, member)
 

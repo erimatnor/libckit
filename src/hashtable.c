@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- 
  *
- * A hash table implementation with reference-counted elements.
+ * A thread-safe hash table implementation with reference-counted
+ * elements.
  *
  * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  * 
@@ -71,8 +72,8 @@ void hashtable_fini(struct hashtable *ht)
 }
 
 int hashtable_foreach(struct hashtable *ht, 
-                       void (*action)(struct hashelm *, void *), 
-                       void *data)
+                      void (*action)(struct hashelm *, void *), 
+                      void *data)
 {
     int i, n = 0;
 
@@ -173,6 +174,7 @@ void hashelm_hold(struct hashelm *he)
 
 void hashelm_put(struct hashelm *he)
 {
+    LOG_DBG("hashelm refcount=%u\n", atomic_read(&he->refcount));
     if (atomic_dec_and_test(&he->refcount)) 
         if (he->ht->freefn) {
             he->ht->freefn(he);
