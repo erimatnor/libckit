@@ -101,7 +101,7 @@ unsigned int hashtable_count(struct hashtable *ht)
 }
 
 static struct hashslot *get_slot(struct hashtable *tbl,
-                                    unsigned int hash)
+                                 unsigned int hash)
 {
     return &tbl->table[hash & tbl->mask];
 }

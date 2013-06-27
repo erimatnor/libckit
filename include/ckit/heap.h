@@ -41,7 +41,7 @@ static inline struct heapitem *heap_remove_first(struct heap *h)
 #define heap_first_entry(heap, type, member)        \
     get_enclosing(heap_front(heap), type, member)
 
-#define heap_remove_first_entry(heap, type, member)     \
+#define heap_remove_first_entry(heap, type, member)         \
     get_enclosing(heap_remove_first(heap), type, member)
 
 #endif /* _HEAP_H_ */

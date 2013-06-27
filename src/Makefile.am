@@ -19,7 +19,12 @@ libckit_la_include_HEADERS = \
 libckit_la_CPPFLAGS = \
 	-I$(top_srcdir)/include
 libckit_la_CFLAGS =
-libckit_la_LDFLAGS = -lrt
+libckit_la_LDFLAGS = 
+
+if OS_LINUX
+libckit_la_LDFLAGS += \
+	-lrt
+endif
 
 #bin_PROGRAMS = list_unittest
 

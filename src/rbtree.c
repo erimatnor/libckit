@@ -195,8 +195,8 @@ static void rb_tree_rotate_right_side_right(rb_node_t *node)
 		rb_node_t *child = node->left;
 		rb_node_t *parent = node->parent;
         /*
-		LOG_DBG("rotate right side right node=%d child=%d parent=%d\n",
-			   node->debug, child->debug, parent->debug);
+          LOG_DBG("rotate right side right node=%d child=%d parent=%d\n",
+          node->debug, child->debug, parent->debug);
         */
 		parent->right = child;
 		child->parent = parent;
@@ -212,7 +212,7 @@ static void rb_tree_rotate_left_side_right(rb_node_t *node)
 		rb_node_t *child = node->left;
 		rb_node_t *parent = node->parent;
 		LOG_DBG("rotate left side right node=%d child=%d parent=%d\n",
-			   node->debug, child->debug, parent->debug);
+                node->debug, child->debug, parent->debug);
 		parent->left = child;
 		child->parent = parent;
 		node->parent = child;
@@ -227,7 +227,7 @@ static void rb_tree_rotate_right_side_left(rb_node_t *node)
 		rb_node_t *child = node->right;
 		rb_node_t *parent = node->parent;
 		LOG_DBG("rotate right side left node=%d child=%d parent=%d\n",
-			   node->debug, child->debug, parent->debug);
+                node->debug, child->debug, parent->debug);
 		parent->right = child;
 		child->parent = parent;
 		node->parent = child;
@@ -242,7 +242,7 @@ static void rb_tree_rotate_left_side_left(rb_node_t *node)
 		rb_node_t *child = node->right;
 		rb_node_t *parent = node->parent;
 		LOG_DBG("rotate left side left node=%d child=%d parent=%d\n",
-			   node->debug, child->debug, parent->debug);
+                node->debug, child->debug, parent->debug);
 		parent->left = child;
 		child->parent = parent;
 		node->parent = child;
@@ -409,7 +409,7 @@ void rb_tree_print_in_order(rb_tree_t *tree)
 	while (curr != NULL) {
 		if (curr->left == NULL) {
 			LOG_DBG("%s color=%s\n", tree->ops->value_print(&curr->val),
-				   curr->color ? "red" : "black");
+                    curr->color ? "red" : "black");
 			curr = curr->right;
 		} else {
 			prev = curr->left;
@@ -423,7 +423,7 @@ void rb_tree_print_in_order(rb_tree_t *tree)
 			} else {
 				prev->right = NULL;
 				LOG_DBG("%s color=%s\n", tree->ops->value_print(&curr->val),
-					   curr->color ? "red" : "black" );
+                        curr->color ? "red" : "black" );
 				curr = curr->right;
 			}
 		}

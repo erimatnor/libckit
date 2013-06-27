@@ -20,14 +20,14 @@
 #include <android/log.h>
 #if defined(ENABLE_DEBUG)
 #define LOG_DBG(format, ...)                                    \
-    __android_log_print(ANDROID_LOG_DEBUG, "ckit",       \
+    __android_log_print(ANDROID_LOG_DEBUG, "ckit",              \
                         "%s: "format, __func__, ## __VA_ARGS__)
 #else
 #define LOG_DBG(format, ...)
 #endif /* ENABLE_DEBUG */
-#define LOG_ERR(format, ...)                                \
-    __android_log_print(ANDROID_LOG_ERROR, "ckit",   \
-                        "%s: ERROR "format,                 \
+#define LOG_ERR(format, ...)                        \
+    __android_log_print(ANDROID_LOG_ERROR, "ckit",  \
+                        "%s: ERROR "format,         \
                         __func__, ## __VA_ARGS__)
 #else
 #if defined(ENABLE_DEBUG)
@@ -35,8 +35,8 @@
 #define LOG_DBG(format, ...) ({                             \
             struct timeval now;                             \
             gettimeofday(&now, NULL);                       \
-            printf("%ld.%06ld %s: "format, now.tv_sec,      \
-                   now.tv_usec, __func__, ## __VA_ARGS__);  \
+            printf("%ld.%06ld %s: "format, (long)now.tv_sec,    \
+                   (long)now.tv_usec, __func__, ## __VA_ARGS__);    \
         })
 #else
 #define LOG_DBG(format, ...)

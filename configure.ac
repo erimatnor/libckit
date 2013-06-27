@@ -14,9 +14,27 @@ AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_CONFIG_HEADERS([config.h])
 
+CPPFLAGS=
 CFLAGS=-Wall
 CXXFLAGS=-Wall
 EXTRA_DEFINES=
+
+case $host in
+  *-*-linux*)
+	os_type=linux
+	CPPFLAGS="${CPPFLAGS} -DOS_LINUX"
+	;;
+  *-*-darwin*)
+	os_type=bsd
+	os_variant=darwin
+	CPPFLAGS="${CPPFLAGS} -DOS_DARWIN -DOS_BSD"
+	;;
+esac
+
+# Set some automake variables
+AM_CONDITIONAL(OS_LINUX, [test x$os_type = xlinux])
+AM_CONDITIONAL(OS_BSD, [test x$os_type = xbsd])
+AM_CONDITIONAL(OS_DARWIN, [test x$os_variant = xdarwin])
 
 dnl Option to set debugging                                                                          
 AC_ARG_ENABLE([debug],
