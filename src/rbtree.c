@@ -336,7 +336,7 @@ int _rb_tree_insert(rb_tree_t *tree, void *key, size_t key_len,
 	ret = bst_insert(tree, key, key_len, val, val_len, &new_node);
 	
 	if (ret <= 0) {
-		LOG_DBG(stderr, "inserting error\n");
+		LOG_DBG("inserting error\n");
 		return ret;
 	}
 	

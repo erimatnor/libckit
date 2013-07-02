@@ -75,7 +75,8 @@ int hashtable_foreach(struct hashtable *ht,
                       void (*action)(struct hashelm *, void *), 
                       void *data)
 {
-    int i, n = 0;
+    int n = 0;
+    unsigned i;
 
     if (!action)
         return -1;
@@ -143,28 +144,28 @@ int hashtable_hash(struct hashtable *ht, struct hashelm *he,
     return 0;
 }
 
-void hashtable_unhash(struct hashtable *ht, struct hashelm *he)
+static void __unhash(struct hashtable *ht, 
+                     struct hashslot *slot, 
+                     struct hashelm *he)
 {
-    struct hashslot *slot;    
-
-    slot = get_slot(ht, he->hash);
-    pthread_mutex_lock(&slot->lock);
     list_del(&he->list);
     slot->count--;
     atomic_dec(&ht->count);
-    hashelm_put(he);
+    hashelm_put(he);    
+}
+
+void hashtable_unhash(struct hashtable *ht, struct hashelm *he)
+{
+    struct hashslot *slot;
+    slot = get_slot(ht, he->hash);
+    pthread_mutex_lock(&slot->lock);
+    __unhash(ht, slot, he);
     pthread_mutex_unlock(&slot->lock);
 }
 
-void __hashelm_unhash(struct hashtable *ht, struct hashelm *he)
+void __hashtable_unhash(struct hashtable *ht, struct hashelm *he)
 {
-    struct hashslot *slot;    
-
-    slot = get_slot(ht, he->hash);
-    list_del(&he->list);
-    slot->count--;
-    atomic_dec(&ht->count);
-    hashelm_put(he);
+    __unhash(ht, get_slot(ht, he->hash), he);
 }
 
 void hashelm_hold(struct hashelm *he)
@@ -174,11 +175,11 @@ void hashelm_hold(struct hashelm *he)
 
 void hashelm_put(struct hashelm *he)
 {
-    LOG_DBG("hashelm refcount=%u\n", atomic_read(&he->refcount));
-    if (atomic_dec_and_test(&he->refcount)) 
+    if (atomic_dec_and_test(&he->refcount)) {
         if (he->ht->freefn) {
             he->ht->freefn(he);
         }
+    }
 }
 
 int hashelm_init(struct hashelm *he)
