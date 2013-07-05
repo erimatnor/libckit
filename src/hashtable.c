@@ -31,7 +31,7 @@ int hashtable_init(struct hashtable *ht, unsigned int size,
         return -1;
     
     ht->mask = size - 1;
-    atomic_set(&ht->count, 0);
+    atomic_set(&ht->count, 1);
     ht->hashfn = hashfn;
     ht->equalfn = equalfn;
     ht->freefn = freefn;
