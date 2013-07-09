@@ -53,6 +53,16 @@ static inline void list_del(struct list *to_del)
 }
 
 /**
+ * Move element from one list to another.
+ */
+static inline void list_move(struct list *to_move, struct list *anchor)
+{
+    to_move->prev->next = to_move->next;
+    to_move->next->prev = to_move->prev;
+    list_add_front(anchor, to_move);
+}
+
+/**
  * Check if list is empty (0 = empty , 1 otherwise).
  */
 #define list_empty(list) ((list)->next == (list))
