@@ -6,6 +6,11 @@
 #include <sys/epoll.h>
 #include <string.h>
 
+#if defined(ANDROID)
+#define EPOLLRDHUP   (0x2000)
+#define EPOLLONESHOT (1u << 30)
+#endif
+
 int event_open(void)
 {
     return epoll_create(10);

@@ -4,6 +4,7 @@ include $(CLEAR_VARS)
 
 LOCAL_HDR_FILES := \
 	../include/ckit/debug.h \
+	../include/ckit/event.h \
 	../include/ckit/heap.h \
 	../include/ckit/timer.h \
 	../include/ckit/signal.h \
@@ -13,6 +14,7 @@ LOCAL_HDR_FILES := \
 	../include/ckit/rbtree.h 
 
 LOCAL_SRC_FILES := \
+	../src/event_epoll.c \
 	../src/heap.c \
 	../src/signal.c \
 	../src/timer.c \

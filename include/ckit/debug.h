@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#if defined(__ANDROID__)
+#if defined(ANDROID)
 #include <android/log.h>
 
 #define __LOG(type, atype, format, ...)                                 \
@@ -21,16 +21,16 @@
 
 #if defined(ENABLE_DEBUG)
 #define LOG_DBG(format, ...)                                \
-    __LOG("DBG", ANDROID_LOG_DEBUG, format, ##__VA_ARGS)
+    __LOG("DBG", ANDROID_LOG_DEBUG, format, ##__VA_ARGS__)
 
 #else
 #define LOG_DBG(format, ...)
 #endif /* ENABLE_DEBUG */
 
 #define LOG_ERR(format, ...)                                \
-    __LOG("ERR", ANROID_LOG_ERROR, format, ##__VA_ARGS)
+    __LOG("ERR", ANDROID_LOG_ERROR, format, ##__VA_ARGS__)
 #define LOG_INF(format, ...)                            \
-    __LOG("INF", ANROID_LOG_INFO, format, ##__VA_ARGS__)
+    __LOG("INF", ANDROID_LOG_INFO, format, ##__VA_ARGS__)
 
 #else /* ANDROID */
 #include <sys/time.h>
