@@ -1,5 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 #include <sys/socket.h>
+#include <unistd.h>
 #include <ckit/event.h>
 #include <ckit/debug.h>
 #include <sys/epoll.h>
@@ -106,14 +107,20 @@ int event_wait(int efd, struct event *events, int maxevents, int timeout)
     struct epoll_event epoll_events[maxevents];
     int ret;
 
-    ret = epoll_wait(efd, &epoll_events, maxevents, timeout);
+    //LOG_DBG("epoll_wait\n");
+    ret = epoll_wait(efd, epoll_events, maxevents, timeout);
+    
+    //LOG_DBG("epoll_wait returned %d\n", ret);
 
-    if (ret > 0) {
+    if (ret == -1) {
+        LOG_ERR("epoll_wait: %s\n",
+                strerror(errno));
+    } else if (ret > 0) {
         unsigned i;
 
         for (i = 0; i < ret; i++)
             epoll_event_to_event(&epoll_events[i], &events[i]);
-    }
+    } 
 
     return ret;
 }

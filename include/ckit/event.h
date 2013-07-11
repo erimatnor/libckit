@@ -2,7 +2,7 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__
 
-#include <sys/types.h>
+#include <inttypes.h>
 
 typedef enum event_ctl {
     EVENT_CTL_ADD,

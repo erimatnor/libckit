@@ -33,6 +33,7 @@
     __LOG("INF", ANROID_LOG_INFO, format, ##__VA_ARGS__)
 
 #else /* ANDROID */
+#include <sys/time.h>
 
 #define __LOG(type, format, ...) ({                                     \
             struct timeval now;                                         \
