@@ -9,13 +9,17 @@ libckit_la_SOURCES = \
 
 libckit_la_includedir=$(includedir)/ckit
 libckit_la_include_HEADERS = \
+	$(top_srcdir)/include/ckit/atomic.h \
+	$(top_srcdir)/include/ckit/ckit.h \
+	$(top_srcdir)/include/ckit/debug.h \
+	$(top_srcdir)/include/ckit/event.h \
+        $(top_srcdir)/include/ckit/hash.h \
+        $(top_srcdir)/include/ckit/hashtable.h \
+        $(top_srcdir)/include/ckit/heap.h \
+        $(top_srcdir)/include/ckit/list.h \
 	$(top_srcdir)/include/ckit/rbtree.h \
         $(top_srcdir)/include/ckit/signal.h \
-        $(top_srcdir)/include/ckit/heap.h \
-        $(top_srcdir)/include/ckit/timer.h \
-        $(top_srcdir)/include/ckit/event.h \
-        $(top_srcdir)/include/ckit/hash.h \
-        $(top_srcdir)/include/ckit/hashtable.h
+        $(top_srcdir)/include/ckit/timer.h
 
 libckit_la_CPPFLAGS = \
 	-I$(top_srcdir)/include
