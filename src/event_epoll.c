@@ -45,22 +45,22 @@ static void event_to_epoll_event(const struct event *ev,
     memset(eev, 0, sizeof(*eev));
 
     if (ev->events & EVENT_IN)
-        eev->events = EPOLLIN;
+        eev->events |= EPOLLIN;
 
     if (ev->events & EVENT_OUT)
-        eev->events = EPOLLOUT;
+        eev->events |= EPOLLOUT;
 
     if (ev->events & EVENT_HUP)
-        eev->events = EPOLLHUP;
+        eev->events |= EPOLLHUP;
     
     if (ev->events & EVENT_RDHUP)
-        eev->events = EPOLLRDHUP;
+        eev->events |= EPOLLRDHUP;
 
     if (ev->events & EVENT_ET)
-        eev->events = EPOLLET;
+        eev->events |= EPOLLET;
 
     if (ev->events & EVENT_ONESHOT)
-        eev->events = EPOLLONESHOT;
+        eev->events |= EPOLLONESHOT;
 
     memcpy(&eev->data, &ev->data, sizeof(ev->data));
 }
@@ -71,22 +71,22 @@ static void epoll_event_to_event(const struct epoll_event *eev,
     memset(ev, 0, sizeof(*ev));
 
     if (eev->events & EPOLLIN)
-        ev->events = EVENT_IN;
+        ev->events |= EVENT_IN;
 
     if (eev->events & EPOLLOUT)
-        ev->events = EVENT_OUT;
+        ev->events |= EVENT_OUT;
 
     if (eev->events & EPOLLHUP)
-        ev->events = EVENT_HUP;
+        ev->events |= EVENT_HUP;
     
     if (eev->events & EPOLLRDHUP)
-        ev->events = EVENT_RDHUP;
+        ev->events |= EVENT_RDHUP;
 
     if (eev->events & EPOLLET)
-        ev->events = EVENT_ET;
+        ev->events |= EVENT_ET;
 
     if (eev->events & EPOLLONESHOT)
-        ev->events = EVENT_ONESHOT;
+        ev->events |= EVENT_ONESHOT;
 
     memcpy(&ev->data, &eev->data, sizeof(eev->data));
 }
