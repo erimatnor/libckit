@@ -6,8 +6,8 @@
  * Author: Erik Nordström <erik.nordstrom@gmail.com>
  *
  */
-#ifndef __SIGNAL_H__
-#define __SIGNAL_H__
+#ifndef CKIT_SIGNAL_H
+#define CKIT_SIGNAL_H
 
 #include <ckit/atomic.h>
 
@@ -29,4 +29,4 @@ int signal_raise_val(struct signal *s, int val);
 int signal_raise(struct signal *s);
 unsigned int signal_num_waiting(struct signal *s);
 
-#endif /* __SIGNAL_H__ */
+#endif /* CKIT_SIGNAL_H */

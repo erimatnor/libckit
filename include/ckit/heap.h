@@ -4,10 +4,8 @@
  *
  * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  */
-#ifndef _HEAP_H_
-#define _HEAP_H_
-
-#include <ckit/ckit.h>
+#ifndef CKIT_HEAP_H
+#define CKIT_HEAP_H
 
 typedef struct heapitem {
     unsigned int index;
@@ -35,6 +33,8 @@ static inline struct heapitem *heap_remove_first(struct heap *h)
     return heap_remove(h, 0);
 }
 
+#include <ckit/ckit.h>
+
 #define heap_entry(ptr, type, member)           \
     get_enclosing(ptr, type, member)
 
@@ -44,4 +44,4 @@ static inline struct heapitem *heap_remove_first(struct heap *h)
 #define heap_remove_first_entry(heap, type, member)         \
     get_enclosing(heap_remove_first(heap), type, member)
 
-#endif /* _HEAP_H_ */
+#endif /* CKIT_HEAP_H */

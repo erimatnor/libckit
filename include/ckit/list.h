@@ -4,8 +4,8 @@
  *
  * Author: Erik Nordström <erik.nordstrom@gmail.com>
  */
-#ifndef __LIST_H__
-#define __LIST_H__
+#ifndef CKIT_LIST_H__
+#define CKIT_LIST_H__
 
 #include <ckit/ckit.h>
 
@@ -17,7 +17,7 @@ typedef struct list {
  * Initialize the list anchor (head). Must be called once on all list
  * objects acting as anchors.
  */
-#define LIST_INIT(list)                             \
+#define INIT_LIST(list)                             \
     { (list)->prev = list; (list)->next = list; }
 
 /**
@@ -63,6 +63,10 @@ static inline void list_move(struct list *to_move, struct list *anchor)
 }
 
 /**
+ * Cut a list in two pieces
+ */
+
+/**
  * Check if list is empty (0 = empty , 1 otherwise).
  */
 #define list_empty(list) ((list)->next == (list))
@@ -82,9 +86,15 @@ static inline void list_move(struct list *to_move, struct list *anchor)
 /**
  * Traverse all elments in list from front to back.
  */
-#define list_foreach(ptr, anchor, member)                                 \
-    for (ptr = list_front(anchor, typeof(*(ptr)), member);                \
-         &(ptr)->member != anchor;                                        \
+#define list_foreach(ptr, anchor, member)                               \
+    for (ptr = list_front(anchor, typeof(*(ptr)), member);              \
+         &(ptr)->member != (anchor);                                    \
          ptr = get_enclosing((ptr)->member.next, typeof(*(ptr)), member))
 
-#endif /* __LIST_H__ */
+#define list_foreach_safe(ptr, tmp, anchor, member)                     \
+    for (ptr = list_front(anchor, typeof(*(ptr)), member),              \
+             tmp = get_enclosing((ptr)->member.next, typeof(*(ptr)), member); \
+         &(ptr)->member != (anchor);                                    \
+         ptr = tmp, tmp = get_enclosing((ptr)->member.next, typeof(*(ptr)), member))
+
+#endif /* CKIT_LIST_H */

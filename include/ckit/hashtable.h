@@ -5,8 +5,8 @@
  *
  * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  */
-#ifndef __HASHTABLE_H__
-#define __HASHTABLE_H__
+#ifndef CKIT_HASHTABLE_H
+#define CKIT_HASHTABLE_H
 
 #include <ckit/hash.h>
 #include <ckit/list.h>
@@ -127,4 +127,4 @@ int hashelm_init(struct hashelm *he);
 #define hashtable_lookup_entry(tbl, key, hashfn, type, member)      \
     get_enclosing(hashtable_lookup(tbl, key, hashfn), type, member)
 
-#endif /* __HASHTABLE_H__ */
+#endif /* CKIT_HASHTABLE_H */

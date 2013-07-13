@@ -4,14 +4,13 @@
  *
  * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  */
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef CKIT_TIMER_H
+#define CKIT_TIMER_H
 
-#include <sys/types.h>
-#include <sys/time.h>
-#include <pthread.h>
-#include <ckit/heap.h>
 #include <ckit/signal.h>
+#include <ckit/time.h>
+#include <ckit/heap.h>
+#include <pthread.h>
 
 struct timer {
     struct heapitem hi;
@@ -82,50 +81,4 @@ void timer_queue_fini(struct timer_queue *tq);
 #define timer_scheduled(t) (t->hi.active)
 #define timer_destroy(t) { if ((t)->destruct) (t)->destruct(t); }
 
-/* convenience functions (from RTLinux) */
-#define NSEC_PER_SEC   1000000000L
-#define NSEC_PER_MSEC  1000000L
-#define USEC_PER_SEC   1000000L
-#define MSEC_PER_SEC   1000L
-#define NSEC_PER_USEC  1000L
-#define USEC_PER_MSEC  1000L
-
-#define timespec_normalize(t) {                 \
-        if ((t)->tv_nsec >= NSEC_PER_SEC) {     \
-            (t)->tv_nsec -= NSEC_PER_SEC;       \
-            (t)->tv_sec++;                      \
-        } else if ((t)->tv_nsec < 0) {          \
-            (t)->tv_nsec += NSEC_PER_SEC;       \
-            (t)->tv_sec--;                      \
-        }                                       \
-    }
-
-#define timespec_add_nsec(t1, nsec) do {        \
-        (t1)->tv_sec += nsec / NSEC_PER_SEC;    \
-        (t1)->tv_nsec += nsec % NSEC_PER_SEC;   \
-        timespec_normalize(t1);                 \
-    } while (0)
-
-#define timespec_add(t1, t2) do {               \
-        (t1)->tv_nsec += (t2)->tv_nsec;         \
-        (t1)->tv_sec += (t2)->tv_sec;           \
-        timespec_normalize(t1);                 \
-    } while (0)
-
-#define timespec_sub(t1, t2) do {               \
-        (t1)->tv_nsec -= (t2)->tv_nsec;         \
-        (t1)->tv_sec -= (t2)->tv_sec;           \
-        timespec_normalize(t1);                 \
-    } while (0)
-
-#define timespec_nz(t) ((t)->tv_sec != 0 || (t)->tv_nsec != 0)
-#define timespec_lt(t1, t2) ((t1)->tv_sec < (t2)->tv_sec ||     \
-                             ((t1)->tv_sec == (t2)->tv_sec &&   \
-                              (t1)->tv_nsec < (t2)->tv_nsec))
-#define timespec_gt(t1, t2) (timespec_lt(t2, t1))
-#define timespec_ge(t1, t2) (!timespec_lt(t1, t2))
-#define timespec_le(t1, t2) (!timespec_gt(t1, t2))
-#define timespec_eq(t1, t2) ((t1)->tv_sec == (t2)->tv_sec &&    \
-                             (t1)->tv_nsec == (t2)->tv_nsec)
-
-#endif /* _TIMER_H_ */
+#endif /* CKIT_TIMER_H */

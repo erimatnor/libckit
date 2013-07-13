@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-#ifndef _HASH_H_
-#define _HASH_H_
+#ifndef CKIT_HASH_H
+#define CKIT_HASH_H
 
 /*
   Based on sdbm hash.
@@ -31,4 +31,4 @@ static inline unsigned long string_hash(const char *str)
     return hash;
 }
 
-#endif /* _HASH_H */
+#endif /* CKIT_HASH_H */

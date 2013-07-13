@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-#ifndef __EVENT_H__
-#define __EVENT_H__
+#ifndef CKIT_EVENT_H
+#define CKIT_EVENT_H
 
 #include <inttypes.h>
 
@@ -36,4 +36,4 @@ void event_close(int efd);
 int event_ctl(int efd, enum event_ctl ctl, int fd, struct event *ev);
 int event_wait(int efd, struct event *events, int maxevents, int timeout); 
 
-#endif /* __EVENT_H__ */
+#endif /* CKIT_EVENT_H */

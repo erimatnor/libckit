@@ -39,7 +39,7 @@ int hashtable_init(struct hashtable *ht, unsigned int size,
     /* LOG_DBG("Initializing hash table\n"); */
 
 	for (i = 0; i <= ht->mask; i++) {
-		LIST_INIT(&ht->table[i].head);
+		INIT_LIST(&ht->table[i].head);
 		ht->table[i].count = 0;
 		pthread_mutex_init(&ht->table[i].lock, NULL);
 	}
@@ -62,7 +62,7 @@ void hashtable_fini(struct hashtable *ht)
             hashelm_put(he);
         }
 
-		LIST_INIT(&ht->table[i].head);
+		INIT_LIST(&ht->table[i].head);
 		ht->table[i].count = 0;
         pthread_mutex_unlock(&ht->table[i].lock);
 		pthread_mutex_destroy(&ht->table[i].lock);
@@ -184,7 +184,7 @@ void hashelm_put(struct hashelm *he)
 
 int hashelm_init(struct hashelm *he)
 {
-    LIST_INIT(&he->list);
+    INIT_LIST(&he->list);
     atomic_set(&he->refcount, 1);
     return 0;
 }

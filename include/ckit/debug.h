@@ -6,8 +6,8 @@
  * Authors: Erik Nordström <erik.nordstrom@gmail.com>
  *
  */
-#ifndef _DEBUG_H_
-#define _DEBUG_H_
+#ifndef CKIT_DEBUG_H
+#define CKIT_DEBUG_H
 
 #include <stdio.h>
 #include <errno.h>
@@ -59,4 +59,4 @@
 
 #endif /* ANDROID */
 
-#endif /* _DEBUG_H_ */
+#endif /* CKIT_DEBUG_H */

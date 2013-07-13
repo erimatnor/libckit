@@ -1,13 +1,13 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-#ifndef __RBTREE_H__
-#define __RBTREE_H__
+#ifndef CKIT_RBTREE_H
+#define CKIT_RBTREE_H
 
 #include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+    
     typedef enum {
         RB_COLOR_BLACK = 0,
         RB_COLOR_RED,
@@ -69,4 +69,4 @@ extern "C" {
 }
 #endif
         
-#endif /* __RBTREE_H__ */
+#endif /* CKIT_RBTREE_H */

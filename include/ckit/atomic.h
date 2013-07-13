@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-#ifndef __ATOMIC_H__
-#define __ATOMIC_H__
+#ifndef CKIT_ATOMIC_H
+#define CKIT_ATOMIC_H
 
 typedef struct atomic {
     int value;
@@ -19,4 +19,4 @@ typedef struct atomic {
 #define atomic_dec_and_test(a)                  \
     (atomic_dec(a) == 0)
 
-#endif /* __ATOMIC_H__ */
+#endif /* CKIT_ATOMIC_H */

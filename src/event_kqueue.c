@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <ckit/event.h>
 #include <ckit/debug.h>
+#include <ckit/time.h>
 
 int event_open(void)
 {
@@ -82,11 +83,11 @@ int event_ctl(int efd, enum event_ctl ctl, int fd, struct event *ev)
 int event_wait(int efd, struct event *events, int maxevents, int timeout)
 {
     struct kevent kevents[maxevents];
-    struct timespec ts = { timeout / 1000, 
-                           (timeout % 1000) * 1000000L } ;
+    struct timespec ts = { 0, 0 };
     struct timespec *ts_ptr = &ts;
     int ret;
 
+    timespec_add_nsec(&ts, timeout * 1000000L);
     memset(kevents, 0, sizeof(kevents));
 
     if (timeout == -1) 
