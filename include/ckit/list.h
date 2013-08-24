@@ -57,8 +57,7 @@ static inline void list_del(struct list *to_del)
  */
 static inline void list_move(struct list *to_move, struct list *anchor)
 {
-    to_move->prev->next = to_move->next;
-    to_move->next->prev = to_move->prev;
+    list_del(to_move);
     list_add_front(anchor, to_move);
 }
 
