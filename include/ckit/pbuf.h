@@ -7,11 +7,12 @@
 #define CTRL_BLOCK_SIZE 20
 
 /* Packet buffer, with similar semantics to Linux sk_buffs. */
-typedef struct pbuf {
+typedef struct pbuf {    
     atomic_t refcount;
     unsigned ifindex;
     unsigned char cb[CTRL_BLOCK_SIZE];
-    unsigned len;
+    size_t alloc_len;
+    size_t len;
     unsigned data, tail, end;
     unsigned link_offset;
     unsigned network_offset;
@@ -27,6 +28,7 @@ void pbuf_pool_cleanup(void);
 
 struct pbuf *pbuf_alloc(size_t size);
 void pbuf_free(struct pbuf *pb);
+struct pbuf *pbuf_copy(struct pbuf *pb);
 
 static inline unsigned char *pbuf_data(struct pbuf *pb)
 {

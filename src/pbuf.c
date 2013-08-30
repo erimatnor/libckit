@@ -68,6 +68,7 @@ struct pbuf *pbuf_alloc(size_t size)
         list_move(&ppe->lnode, &use_list);
         pbuf_init(&ppe->pbuf, size);
         pb = &ppe->pbuf;
+        pb->alloc_len = size;
     }
     
     pthread_mutex_unlock(&pool_mutex);
@@ -85,6 +86,21 @@ void pbuf_free(struct pbuf *pb)
         list_move(&ppe->lnode, &free_list);
         pthread_mutex_unlock(&pool_mutex);
     }
+}
+
+struct pbuf *pbuf_copy(struct pbuf *pb)
+{
+    struct pbuf *pb_copy;
+
+    pb_copy = pbuf_alloc(pb->len);
+    
+    if (!pb_copy)
+        return NULL;
+
+    memcpy(pb_copy, pb, sizeof(struct pbuf) + pb->tail);
+    atomic_set(&pb_copy->refcount, 1);
+
+    return pb_copy;
 }
 
 /**
