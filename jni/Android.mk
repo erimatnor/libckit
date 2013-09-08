@@ -11,6 +11,7 @@ LOCAL_HDR_FILES := \
 	../include/ckit/list.h \
 	../include/ckit/hash.h \
 	../include/ckit/hashtable.h \
+	../include/ckit/pbuf.h \
 	../include/ckit/rbtree.h 
 
 LOCAL_SRC_FILES := \
@@ -19,6 +20,7 @@ LOCAL_SRC_FILES := \
 	../src/signal.c \
 	../src/timer.c \
 	../src/rbtree.c \
+	../src/pbuf.c \
 	../src/hashtable.c
 
 LOCAL_C_INCLUDES += \
