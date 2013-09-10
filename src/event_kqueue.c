@@ -56,7 +56,7 @@ static void kevent_to_event(const struct kevent *kev, struct event *ev)
         //LOG_DBG("EV_EOF set on fd=%d\n", (int)kev->ident);
         ev->events |= EVENT_RDHUP;
     }
-
+    ev->data.fd = (int)kev->ident;
     ev->data.ptr = kev->udata;
 }
 
@@ -99,8 +99,25 @@ int event_wait(int efd, struct event *events, int maxevents, int timeout)
         LOG_ERR("kevent: %s\n", strerror(errno));
     } else if (ret > 0) {
         int i;
+
         /* Fill in events */
         for (i = 0; i < ret; i++) {
+
+            /* Check for error. The kevent() call may return either -1
+             * on error or an error event in the eventlist in case
+             * there is room */
+            if (kevents[i].flags & EV_ERROR) {
+                    errno = kevents[i].data;
+                /* NOTE/WARNING: What happens to other events returned
+                 * that aren't errors when we return -1 here? This is
+                 * not entirely clear, but since they won't be
+                 * processed by the caller of this function (as the
+                 * return value is -1) the events should still be
+                 * pending and returned in the next call to this
+                 * function. This might, however, not be true for edge
+                 * triggered events. */
+                return -1;
+            } 
             kevent_to_event(&kevents[i], &events[i]);
         }
     }
