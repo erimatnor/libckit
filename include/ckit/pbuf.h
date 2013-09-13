@@ -24,7 +24,8 @@ typedef struct pbuf {
 int pbuf_pool_init(size_t pool_size);
 void pbuf_pool_cleanup(void);
 
-#define PBUF_MAX_SIZE 1510
+#define PBUF_MAX_SIZE 4096
+#define PBUF_MTU_SIZE 1510
 
 struct pbuf *pbuf_alloc(size_t size);
 void pbuf_free(struct pbuf *pb);
