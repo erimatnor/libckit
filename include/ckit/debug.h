@@ -15,8 +15,12 @@
 #if defined(ANDROID)
 #include <android/log.h>
 
+#ifndef LOG_TAG
+#define LOG_TAG "ckit"
+#endif
+
 #define __LOG(type, atype, format, ...)                                 \
-    __android_log_print(atype, "ckit",  "%s %s: "format,                \
+    __android_log_print(atype, LOG_TAG,  "%s %s: "format,                \
                         type, __func__, ##__VA_ARGS__)
 
 #if defined(ENABLE_DEBUG)
@@ -31,6 +35,8 @@
     __LOG("ERR", ANDROID_LOG_ERROR, format, ##__VA_ARGS__)
 #define LOG_INF(format, ...)                            \
     __LOG("INF", ANDROID_LOG_INFO, format, ##__VA_ARGS__)
+#define LOG_WARN(format, ...)                            \
+    __LOG("INF", ANDROID_LOG_WARN, format, ##__VA_ARGS__)
 
 #else /* ANDROID */
 #include <sys/time.h>
@@ -56,6 +62,9 @@
 
 #define LOG_INF(format, ...)                    \
     __LOG("INF", format, ##__VA_ARGS__)
+
+#define LOG_WARN(format, ...)                    \
+    __LOG("WARN", format, ##__VA_ARGS__)
 
 #endif /* ANDROID */
 
