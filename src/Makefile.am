@@ -3,6 +3,7 @@ lib_LTLIBRARIES = libckit.la
 libckit_la_SOURCES = \
 	rbtree.c \
 	heap.c \
+	log.c \
 	pbuf.c \
 	timer.c \
 	signal.c \
@@ -18,6 +19,7 @@ libckit_la_include_HEADERS = \
         $(top_srcdir)/include/ckit/hashtable.h \
         $(top_srcdir)/include/ckit/heap.h \
         $(top_srcdir)/include/ckit/list.h \
+        $(top_srcdir)/include/ckit/log.h \
 	$(top_srcdir)/include/ckit/rbtree.h \
 	$(top_srcdir)/include/ckit/pbuf.h \
         $(top_srcdir)/include/ckit/signal.h \

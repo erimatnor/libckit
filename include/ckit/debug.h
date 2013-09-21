@@ -20,7 +20,7 @@
 #endif
 
 #define __LOG(type, atype, format, ...)                                 \
-    __android_log_print(atype, LOG_TAG,  "%s %s: "format,                \
+    __android_log_print(atype, LOG_TAG,  "%s %s: "format,               \
                         type, __func__, ##__VA_ARGS__)
 
 #if defined(ENABLE_DEBUG)
@@ -47,7 +47,6 @@
             printf("%ld.%06ld %s %s: "format, (long)now.tv_sec,         \
                    (long)now.tv_usec, type, __func__, ##__VA_ARGS__);  \
         })
-
 
 #if defined(ENABLE_DEBUG)
 #include <sys/time.h>
