@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = libckit.la
 
 libckit_la_SOURCES = \
+	debug.c \
 	rbtree.c \
 	heap.c \
 	log.c \

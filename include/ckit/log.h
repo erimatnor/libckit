@@ -15,15 +15,15 @@ typedef enum ck_log_mode {
 } ck_log_mode_t;
 
 typedef struct ck_log {
+    int fd;
     FILE *fp;
     enum ck_log_mode mode;
 } ck_log_t;
 
-#define DEFAULT_CK_LOG_TAG "cklog"
-
-struct ck_log *ck_log_fopen(FILE *fp);
-struct ck_log *ck_log_open(const char *path, enum ck_log_mode mode);
-void ck_log_close(struct ck_log *);
-int ck_log_write(struct ck_log *log, const char *format, ...);
+int ck_log_init(struct ck_log *log, FILE *fp);
+int ck_log_open(struct ck_log *log, const char *path, enum ck_log_mode mode);
+void ck_log_close(struct ck_log *log);
+int ck_log_print(struct ck_log *log, const char *format, ...);
+int ck_log_vprint(struct ck_log *log, const char *format, va_list ap);
 
 #endif /* CKIT_LOG_H */

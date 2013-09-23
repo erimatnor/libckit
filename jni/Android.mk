@@ -9,6 +9,7 @@ LOCAL_HDR_FILES := \
 	../include/ckit/timer.h \
 	../include/ckit/signal.h \
 	../include/ckit/list.h \
+	../include/ckit/log.h \
 	../include/ckit/hash.h \
 	../include/ckit/hashtable.h \
 	../include/ckit/pbuf.h \
@@ -16,6 +17,8 @@ LOCAL_HDR_FILES := \
 
 LOCAL_SRC_FILES := \
 	../src/event_epoll.c \
+	../src/debug.c \
+	../src/log.c \
 	../src/heap.c \
 	../src/signal.c \
 	../src/timer.c \
