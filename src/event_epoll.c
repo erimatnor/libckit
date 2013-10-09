@@ -118,8 +118,10 @@ int event_wait(int efd, struct event *events, int maxevents, int timeout)
     //LOG_DBG("epoll_wait returned %d\n", ret);
 
     if (ret == -1) {
-        LOG_ERR("epoll_wait: %s\n",
-                strerror(errno));
+        if (errno != EINTR) {
+            LOG_ERR("epoll_wait: %s\n",
+                    strerror(errno));
+        }
     } else if (ret > 0) {
         unsigned i;
 

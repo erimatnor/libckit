@@ -134,3 +134,8 @@ void ck_dbg_set_level(struct ck_dbg *log, enum ck_dbg_level level)
 {
     log->level = level;
 }	
+
+void ck_dbg_set_sync_mode(struct ck_dbg *log)
+{
+	ck_log_set_flag(&log->log, CK_LOG_F_SYNC);
+}

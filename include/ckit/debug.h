@@ -50,6 +50,7 @@ int ck_dbg_print(struct ck_dbg *log,
                  const char *tag,
                  const char *format, ...);
 void ck_dbg_set_level(struct ck_dbg *log, enum ck_dbg_level level);
+void ck_dbg_set_sync_mode(struct ck_dbg *log);
 
 #define DBG_SET_LEVEL(level)                    \
     ck_dbg_set_level(dbg_log, level)

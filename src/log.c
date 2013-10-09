@@ -75,11 +75,29 @@ int ck_log_print(struct ck_log *log, const char *format, ...)
     va_start(ap, format);
     ret = vfprintf(log->fp, format, ap);
     va_end(ap);
-    
+
+    if (ck_log_check_flag(log, CK_LOG_F_SYNC))
+        fflush(log->fp);
+
     return ret;
 }
 
 int ck_log_vprint(struct ck_log *log, const char *format, va_list ap)
 {
     return vfprintf(log->fp, format, ap);
+}
+
+void ck_log_set_flag(struct ck_log *log, unsigned char flags)
+{
+    log->flags |= flags;
+}
+
+void ck_log_unset_flag(struct ck_log *log, unsigned char flags)
+{
+    log->flags &= ~flags;
+}
+
+int ck_log_check_flag(struct ck_log *log, unsigned char flags)
+{
+    return (log->flags & flags) > 0;
 }
