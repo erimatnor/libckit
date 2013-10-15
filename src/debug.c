@@ -7,13 +7,13 @@
 #include <android/log.h>
 #endif
 
-struct ck_dbg deflog = { 
-	.log = { .fd = STDOUT_FILENO, 
+static struct ck_dbg default_dbg = { 
+	.log = { .fp = NULL, 
 			 .mode = CK_LOG_APPEND },
     .level = LOG_LVL_DBG
 };
 
-struct ck_dbg *dbg_log = &deflog;
+struct ck_dbg *dbg_log = &default_dbg;
 
 const char *levelstr[] = {
     [LOG_LVL_VERB] = "VERB",
@@ -28,22 +28,29 @@ const char *ck_dbg_level_to_str(enum ck_dbg_level lvl)
 	return levelstr[lvl];
 }
 
-void ck_dbg_set_default_log(struct ck_dbg *log)
+void ck_dbg_set_default_log(struct ck_dbg *dbg)
 {
-	dbg_log = log;
+	dbg_log = dbg;
 }
 
-int ck_dbg_open(struct ck_dbg *log, const char *path)
+int ck_dbg_init(struct ck_dbg *dbg, FILE *fp)
+{
+	memset(dbg, 0, sizeof(struct ck_dbg));
+	dbg->level = LOG_LVL_DBG;
+	return ck_log_init(&dbg->log, fp, CK_LOG_APPEND);
+}
+
+int ck_dbg_open(struct ck_dbg *dbg, const char *path)
 { 
 	int ret;
-	memset(log, 0, sizeof(struct ck_dbg));
-	log->level = LOG_LVL_DBG;
-	ret = ck_log_open(&log->log, path, CK_LOG_APPEND);
+	memset(dbg, 0, sizeof(struct ck_dbg));
+	dbg->level = LOG_LVL_DBG;
+	ret = ck_log_open(&dbg->log, path, CK_LOG_APPEND);
 
 	if (ret == 0) {
 		struct timeval now;
 		gettimeofday(&now, NULL);
-		ck_dbg_print(log, LOG_LVL_INF, 
+		ck_dbg_print(dbg, LOG_LVL_INF, 
 					 "START", "%ld.%06ld %-4s %s\n",
 					 (long)now.tv_sec, (long)now.tv_usec, "INF",
 					 "<<<<<< Log start >>>>>>");
@@ -51,28 +58,28 @@ int ck_dbg_open(struct ck_dbg *log, const char *path)
 	return ret;
 }
 
-void ck_dbg_close(struct ck_dbg *log)
+void ck_dbg_close(struct ck_dbg *dbg)
 {
-    if (log) {
+    if (dbg) {
 		/* Ensure we do not close stdout */
-		if (log != &deflog)
-			ck_log_close(&log->log);
-		if (log == dbg_log)
+		if (dbg != &default_dbg)
+			ck_log_close(&dbg->log);
+		if (dbg == dbg_log)
 			dbg_log = NULL;
     } else if (dbg_log) {
 		/* Ensure we do not close stdout */
-		if (log != &deflog)
+		if (dbg != &default_dbg)
 			ck_log_close(&dbg_log->log);
 		dbg_log = NULL;
     }
 }
 
-bool ck_dbg_is_open(struct ck_dbg *log)
+bool ck_dbg_is_open(struct ck_dbg *dbg)
 {
-	return (log->log.fd > 2);
+	return (dbg->log.fp != NULL || dbg == &default_dbg);
 }
 
-int ck_dbg_print(struct ck_dbg *log, 
+int ck_dbg_print(struct ck_dbg *dbg, 
 				 enum ck_dbg_level level,
 				 const char *tag, 
 				 const char *format, ...)
@@ -80,7 +87,7 @@ int ck_dbg_print(struct ck_dbg *log,
     int ret = 0;
     va_list ap;
 
-    if (level < log->level)
+    if (level < dbg->level)
 		return 0;
 
 	va_start(ap, format);
@@ -105,37 +112,37 @@ int ck_dbg_print(struct ck_dbg *log,
 		break;
     };
 	
-	if (log == &deflog) 
+	if (dbg == &default_dbg) 
 		ret = __android_log_vprint(ret, tag, format, ap);
 	else
-		ret = ck_log_vprint(&log->log, format, ap);
+		ret = ck_log_vprint(&dbg->log, format, ap);
 #else
 	/* Write to stderr for LOG_LVL_ERR, but only if we are writing to
 	 * the default log. */
-	if (log == &deflog && 
-		log->log.fd == 1 && 
-		level == LOG_LVL_ERR)
-		log->log.fd = 2;
 
-	ret = ck_log_vprint(&log->log, format, ap);
-
-	/* Switch back to stdout if necessary */
-	if (log == &deflog && 
-		log->log.fd == 2 && 
-		level == LOG_LVL_ERR)
-		log->log.fd = 1;
+	if (dbg == &default_dbg) {
+		if (level == LOG_LVL_ERR)
+			dbg->log.fp = stderr;
+		else
+			dbg->log.fp = stdout;
+	}
+	
+	ret = ck_log_vprint(&dbg->log, format, ap);
+	
+	if (dbg == &default_dbg)
+		dbg->log.fp = NULL;
 #endif
     va_end(ap);
 
     return ret;
 }
 
-void ck_dbg_set_level(struct ck_dbg *log, enum ck_dbg_level level)
+void ck_dbg_set_level(struct ck_dbg *dbg, enum ck_dbg_level level)
 {
-    log->level = level;
+    dbg->level = level;
 }	
 
-void ck_dbg_set_sync_mode(struct ck_dbg *log)
+void ck_dbg_set_sync_mode(struct ck_dbg *dbg)
 {
-	ck_log_set_flag(&log->log, CK_LOG_F_SYNC);
+	ck_log_set_flag(&dbg->log, CK_LOG_F_SYNC);
 }

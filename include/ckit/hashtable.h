@@ -72,10 +72,19 @@ unsigned int hashtable_count(struct hashtable *ht);
 
 /**
  * Apply a function to every element in the hash table.
+ * A write lock is acquired for each hash slot.
  */
 int hashtable_foreach(struct hashtable *ht, 
                       void (*action)(struct hashelm *, void *), 
                       void *data);
+
+/**
+ * Apply a function to every element in the hash table.
+ * A read lock is acquired for each hash slot.
+ */
+int hashtable_foreach_read(struct hashtable *ht, 
+                           void (*action)(struct hashelm *, void *), 
+                           void *data);
 
 /**
  * Insert element into hash table based on given key.

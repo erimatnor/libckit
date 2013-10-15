@@ -14,7 +14,7 @@
 struct hashslot {
     list_t head;
 	unsigned long count;
-	pthread_mutex_t lock;
+	pthread_rwlock_t lock;
 };
 
 /*
@@ -41,7 +41,7 @@ int hashtable_init(struct hashtable *ht, unsigned int size,
 	for (i = 0; i <= ht->mask; i++) {
 		INIT_LIST(&ht->table[i].head);
 		ht->table[i].count = 0;
-		pthread_mutex_init(&ht->table[i].lock, NULL);
+		pthread_rwlock_init(&ht->table[i].lock, NULL);
 	}
 
     return 0;
@@ -54,7 +54,7 @@ void hashtable_fini(struct hashtable *ht)
     for (i = 0; i <= ht->mask; i++) {
         struct hashelm *he;
         
-        pthread_mutex_lock(&ht->table[i].lock);
+        pthread_rwlock_wrlock(&ht->table[i].lock);
 
         while (!list_empty(&ht->table[i].head)) {
             he = list_front(&ht->table[i].head, struct hashelm, list);
@@ -64,8 +64,8 @@ void hashtable_fini(struct hashtable *ht)
 
 		INIT_LIST(&ht->table[i].head);
 		ht->table[i].count = 0;
-        pthread_mutex_unlock(&ht->table[i].lock);
-		pthread_mutex_destroy(&ht->table[i].lock);
+        pthread_rwlock_unlock(&ht->table[i].lock);
+		pthread_rwlock_destroy(&ht->table[i].lock);
 	}
     atomic_set(&ht->count, 0);
     free(ht->table);
@@ -84,14 +84,39 @@ int hashtable_foreach(struct hashtable *ht,
     for (i = 0; i <= ht->mask; i++) {
         struct hashelm *he;
         
-        pthread_mutex_lock(&ht->table[i].lock);
+        pthread_rwlock_wrlock(&ht->table[i].lock);
         
         list_foreach(he, &ht->table[i].head, list) {
             action(he, data);
             n++;
         }
 
-        pthread_mutex_unlock(&ht->table[i].lock);
+        pthread_rwlock_unlock(&ht->table[i].lock);
+	}
+    return n;
+}
+
+int hashtable_foreach_read(struct hashtable *ht, 
+                           void (*action)(struct hashelm *, void *), 
+                           void *data)
+{
+    int n = 0;
+    unsigned i;
+
+    if (!action)
+        return -1;
+
+    for (i = 0; i <= ht->mask; i++) {
+        struct hashelm *he;
+        
+        pthread_rwlock_rdlock(&ht->table[i].lock);
+        
+        list_foreach(he, &ht->table[i].head, list) {
+            action(he, data);
+            n++;
+        }
+
+        pthread_rwlock_unlock(&ht->table[i].lock);
 	}
     return n;
 }
@@ -127,11 +152,11 @@ int hashtable_hash(struct hashtable *ht, struct hashelm *he,
     he->ht = ht;
     he->key = key;
     slot = get_slot(ht, he->hash);
-    pthread_mutex_lock(&slot->lock);
+    pthread_rwlock_wrlock(&slot->lock);
 
     list_foreach(he2, &slot->head, list) {
         if (ht->equalfn(he2, key)) {
-            pthread_mutex_unlock(&slot->lock);
+            pthread_rwlock_unlock(&slot->lock);
             return -1;
         }
     }
@@ -139,7 +164,7 @@ int hashtable_hash(struct hashtable *ht, struct hashelm *he,
     atomic_inc(&ht->count);
     list_add_front(&slot->head, &he->list);
     hashelm_hold(he);
-    pthread_mutex_unlock(&slot->lock);
+    pthread_rwlock_unlock(&slot->lock);
 
     return 0;
 }
@@ -158,9 +183,9 @@ void hashtable_unhash(struct hashtable *ht, struct hashelm *he)
 {
     struct hashslot *slot;
     slot = get_slot(ht, he->hash);
-    pthread_mutex_lock(&slot->lock);
+    pthread_rwlock_wrlock(&slot->lock);
     __unhash(ht, slot, he);
-    pthread_mutex_unlock(&slot->lock);
+    pthread_rwlock_unlock(&slot->lock);
 }
 
 void __hashtable_unhash(struct hashtable *ht, struct hashelm *he)
@@ -196,7 +221,7 @@ struct hashelm *hashtable_lookup(struct hashtable *ht, const void *key)
 
     slot = get_slot(ht, ht->hashfn(key));
     
-    pthread_mutex_lock(&slot->lock);
+    pthread_rwlock_rdlock(&slot->lock);
     
     list_foreach(he, &slot->head, list) {
         if (ht->equalfn(he, key)) {
@@ -206,7 +231,7 @@ struct hashelm *hashtable_lookup(struct hashtable *ht, const void *key)
     }
     he = NULL;
 found:
-    pthread_mutex_unlock(&slot->lock);
+    pthread_rwlock_unlock(&slot->lock);
     
     return he;
 }

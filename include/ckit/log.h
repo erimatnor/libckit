@@ -19,13 +19,12 @@ typedef enum ck_log_flag {
 } ck_log_flag_t;
 
 typedef struct ck_log {
-    int fd;
     FILE *fp;
     enum ck_log_flag flags;
     enum ck_log_mode mode;
 } ck_log_t;
 
-int ck_log_init(struct ck_log *log, FILE *fp);
+int ck_log_init(struct ck_log *log, FILE *fp, enum ck_log_mode mode);
 int ck_log_open(struct ck_log *log, const char *path, enum ck_log_mode mode);
 void ck_log_close(struct ck_log *log);
 int ck_log_print(struct ck_log *log, const char *format, ...);

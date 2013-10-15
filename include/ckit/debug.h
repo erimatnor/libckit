@@ -27,30 +27,30 @@ typedef enum ck_dbg_level {
     LOG_LVL_ERR,
 } ck_dbg_level_t;
 
-struct ck_dbg {
+typedef struct ck_dbg {
     struct ck_log log;
     enum ck_dbg_level level;
-};
+} ck_dbg_t;
 
 /* 
    The singleton default log (which is stdout/stderr 
    unless set explicitly).
 */
 extern struct ck_dbg *dbg_log;
-extern struct ck_dbg deflog;
 
-void ck_dbg_set_default_log(struct ck_dbg *log);
-int ck_dbg_open(struct ck_dbg *log, const char *path);
-void ck_dbg_close(struct ck_dbg *log);
-bool ck_dbg_is_open(struct ck_dbg *log);
+void ck_dbg_set_default_log(struct ck_dbg *dbg);
+int ck_dbg_init(struct ck_dbg *dbg, FILE *fp);
+int ck_dbg_open(struct ck_dbg *dbg, const char *path);
+void ck_dbg_close(struct ck_dbg *dbg);
+bool ck_dbg_is_open(struct ck_dbg *dbg);
 
 const char *ck_dbg_level_to_str(enum ck_dbg_level lvl);
-int ck_dbg_print(struct ck_dbg *log, 
+int ck_dbg_print(struct ck_dbg *dbg, 
                  enum ck_dbg_level level, 
                  const char *tag,
                  const char *format, ...);
-void ck_dbg_set_level(struct ck_dbg *log, enum ck_dbg_level level);
-void ck_dbg_set_sync_mode(struct ck_dbg *log);
+void ck_dbg_set_level(struct ck_dbg *dbg, enum ck_dbg_level level);
+void ck_dbg_set_sync_mode(struct ck_dbg *dbg);
 
 #define DBG_SET_LEVEL(level)                    \
     ck_dbg_set_level(dbg_log, level)

@@ -8,58 +8,38 @@
 #include <fcntl.h>
 #include <ckit/log.h>
 
-int ck_log_init(struct ck_log *log, FILE *fp)
+int ck_log_init(struct ck_log *log, FILE *fp, enum ck_log_mode mode)
 {
     memset(log, 0, sizeof(struct ck_log));
     log->fp = fp;
+    log->mode = mode;
     return 0;
 }
 
 int ck_log_open(struct ck_log *log, const char *path, enum ck_log_mode mode)
 {
-    int fd, ret, oflags = O_WRONLY | O_CREAT;
     char *omode = "";
     FILE *fp;
 
     switch (mode) {
     case CK_LOG_APPEND:
-        oflags |= O_APPEND;
         omode = "a";
         break;
     case CK_LOG_TRUNC:
-        oflags |= O_TRUNC;
         omode = "w";
         break;
     }
-    
-    fd = open(path, oflags);
 
-    if (fd == -1) {
-        fprintf(stderr, "open failed for %s\n", path);
-        return -1;
-    }
-
-    /* Open also a stream handle because android doesn't support
-     * vdprintf() but has vfprintf(). */
-    fp = fdopen(fd, omode);
+    /* Open a stream handle because android doesn't support vdprintf()
+     * but has vfprintf(). */
+    fp = fopen(path, omode);
     
     if (!fp) {
         fprintf(stderr, "fdopen failed for %s\n", path);
-        close(fd);
         return -1;
     }
 
-    ret = ck_log_init(log, fp);
-
-    if (ret == -1) {
-        close(fd);
-    } else {
-        log->mode = mode;
-    }
-
-    log->fd = fd;
-
-    return 0;
+    return ck_log_init(log, fp, mode);
 }
 
 void ck_log_close(struct ck_log *log)

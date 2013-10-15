@@ -11,8 +11,8 @@ typedef struct pbuf {
     atomic_t refcount;
     unsigned ifindex;
     unsigned char cb[CTRL_BLOCK_SIZE];
-    size_t alloc_len;
-    size_t len;
+    size_t alloc_len; /* The amount of space allocated by this buffer. */
+    size_t len;       /* The length of data in this buffer */
     unsigned data, tail, end;
     unsigned link_offset;
     unsigned network_offset;
