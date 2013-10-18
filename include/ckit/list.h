@@ -49,7 +49,7 @@ static inline void list_del(struct list *to_del)
 {
     to_del->prev->next = to_del->next;
     to_del->next->prev = to_del->prev;
-    to_del->next = to_del->prev = NULL;
+    to_del->next = to_del->prev = to_del;
 }
 
 /**
